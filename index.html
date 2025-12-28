@@ -2,441 +2,396 @@
 <html lang="vi">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>KHÔNG TRÚNG THÌ TRẬT | Trading Community</title>
-    <!-- Tailwind CSS -->
-    <script src="https://cdn.tailwindcss.com"></script>
-    <!-- Google Fonts: Thêm JetBrains Mono cho số liệu chuẩn Trading -->
-    <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;700&family=Space+Grotesk:wght@300;400;500;600;700&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
-    <!-- Font Awesome -->
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-
-    <script>
-        tailwind.config = {
-            theme: {
-                extend: {
-                    fontFamily: {
-                        sans: ['Inter', 'sans-serif'],
-                        display: ['Space Grotesk', 'sans-serif'],
-                        mono: ['JetBrains Mono', 'monospace'], // Font cho số liệu
-                    },
-                    colors: {
-                        primary: '#0ECB81', /* Màu xanh sàn Binance */
-                        secondary: '#F6465D', /* Màu đỏ sàn Binance */
-                        dark: '#0B0E11', /* Màu nền chuẩn sàn */
-                        card: '#1E2329',
-                        accent: '#F0B90B', /* Màu vàng Binance */
-                    },
-                    animation: {
-                        'float': 'float 6s ease-in-out infinite',
-                        'pulse-fast': 'pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite',
-                        'marquee': 'marquee 30s linear infinite',
-                    },
-                    keyframes: {
-                        float: {
-                            '0%, 100%': { transform: 'translateY(0)' },
-                            '50%': { transform: 'translateY(-15px)' },
-                        },
-                        marquee: {
-                            '0%': { transform: 'translateX(0%)' },
-                            '100%': { transform: 'translateX(-100%)' },
-                        }
-                    }
-                }
-            }
-        }
-    </script>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+    <title>Thành Phát | HoldStation</title>
+    
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@500;700&display=swap" rel="stylesheet">
 
     <style>
-        /* Custom Scrollbar */
-        ::-webkit-scrollbar { width: 6px; }
-        ::-webkit-scrollbar-track { background: #0B0E11; }
-        ::-webkit-scrollbar-thumb { background: #2B3139; border-radius: 3px; }
-        ::-webkit-scrollbar-thumb:hover { background: #474D57; }
-
-        /* Glassmorphism Pro */
-        .glass {
-            background: rgba(30, 35, 41, 0.7);
-            backdrop-filter: blur(12px);
-            -webkit-backdrop-filter: blur(12px);
-            border: 1px solid rgba(255, 255, 255, 0.05);
-            box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.37);
+        :root {
+            --bg-deep: #050202;
+            --fire-primary: #ff4500;
+            --fire-secondary: #ff8c00;
+            --glass: rgba(20, 10, 10, 0.85);
+            --border: rgba(255, 69, 0, 0.3);
+            --text-white: #ffffff;
+            --text-gray: #a1a1aa;
         }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+
+        body {
+            background-color: var(--bg-deep);
+            font-family: 'Plus Jakarta Sans', sans-serif;
+            min-height: 100vh; min-height: 100dvh;
+            overflow: hidden;
+            color: #fff;
+            position: relative;
+            cursor: default; /* Để cursor mặc định cho dễ nhìn spotlight */
+        }
+
+        /* --- BACKGROUND --- */
+        #bg-video {
+            position: fixed; inset: 0; width: 100%; height: 100%;
+            object-fit: cover; z-index: -3; filter: brightness(0.3) sepia(0.2) contrast(1.1);
+        }
+        #embers-canvas { position: fixed; inset: 0; z-index: -2; pointer-events: none; }
+        .noise-overlay {
+            position: fixed; inset: 0; z-index: -1; pointer-events: none; opacity: 0.05;
+            background: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.65' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)'/%3E%3C/svg%3E");
+        }
+
+        /* --- TOAST NOTIFICATION (Thông báo copy) --- */
+        #toast {
+            position: fixed; top: -100px; left: 50%; transform: translateX(-50%);
+            background: rgba(20, 20, 20, 0.95); border: 1px solid var(--fire-primary);
+            padding: 12px 25px; border-radius: 50px; z-index: 10000;
+            display: flex; align-items: center; gap: 10px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.5); backdrop-filter: blur(10px);
+            transition: top 0.5s cubic-bezier(0.68, -0.55, 0.27, 1.55);
+        }
+        #toast.show { top: 30px; }
+        .toast-icon { color: #00ff00; }
+        .toast-text { font-size: 0.9rem; font-weight: 600; font-family: 'Plus Jakarta Sans', sans-serif; }
+
+        /* --- OVERLAY --- */
+        #overlay {
+            position: fixed; inset: 0; background: #000; z-index: 9999;
+            display: flex; flex-direction: column; justify-content: center; align-items: center;
+            transition: 0.8s cubic-bezier(0.7, 0, 0.3, 1);
+        }
+        .loader-content { text-align: center; display: flex; flex-direction: column; align-items: center; gap: 20px; }
+        .system-status { font-family: 'Orbitron', sans-serif; color: var(--fire-secondary); font-size: 0.8rem; letter-spacing: 2px; margin-bottom: 5px; display: flex; gap: 10px; align-items: center; }
+        .blink-dot { width: 8px; height: 8px; background: var(--fire-primary); border-radius: 50%; animation: blink 1s infinite; }
+        .enter-btn-pro {
+            position: relative; padding: 15px 50px;
+            background: rgba(255, 69, 0, 0.05); border: 1px solid var(--fire-primary);
+            color: #fff; font-family: 'Orbitron', sans-serif; font-weight: 700; letter-spacing: 3px;
+            text-transform: uppercase; cursor: pointer; overflow: hidden; transition: 0.3s;
+            box-shadow: 0 0 30px rgba(255, 69, 0, 0.2);
+        }
+        .enter-btn-pro::before { content: ''; position: absolute; top: 0; left: -100%; width: 100%; height: 100%; background: linear-gradient(90deg, transparent, rgba(255, 69, 0, 0.5), transparent); animation: scan 2s infinite; }
+        .loading-bar { width: 200px; height: 2px; background: #333; margin-top: 10px; position: relative; overflow: hidden; }
+        .bar-fill { position: absolute; top: 0; left: 0; height: 100%; width: 0%; background: var(--fire-primary); animation: loadProgress 2.5s ease-out forwards; }
+
+        /* --- SCROLL WRAPPER --- */
+        .scroll-wrapper {
+            position: absolute; inset: 0; overflow-y: auto;
+            padding: 40px 20px; display: flex; flex-direction: column; align-items: center;
+            padding-bottom: env(safe-area-inset-bottom);
+        }
+
+        .profile-container {
+            width: 100%; max-width: 480px;
+            display: flex; flex-direction: column; align-items: center;
+            position: relative; padding: 20px;
+        }
+
+        /* HUD CORNERS */
+        .hud-corner { position: absolute; width: 30px; height: 30px; border: 2px solid rgba(255, 69, 0, 0.4); transition: 0.5s ease; pointer-events: none; }
+        .hud-tl { top: 0; left: 0; border-right: 0; border-bottom: 0; }
+        .hud-tr { top: 0; right: 0; border-left: 0; border-bottom: 0; }
+        .hud-bl { bottom: 0; left: 0; border-right: 0; border-top: 0; }
+        .hud-br { bottom: 0; right: 0; border-left: 0; border-top: 0; }
+        .profile-container:hover .hud-corner { border-color: var(--fire-secondary); width: 40px; height: 40px; }
+
+        /* --- ANIMATIONS & COMPONENTS --- */
+        .stagger-item { opacity: 0; transform: translateY(30px); transition: 0.8s cubic-bezier(0.2, 0.8, 0.2, 1); }
+        .stagger-item.visible { opacity: 1; transform: translateY(0); }
+
+        .avatar-box { position: relative; width: 120px; height: 120px; margin-bottom: 20px; flex-shrink: 0; }
+        .avatar { width: 100%; height: 100%; border-radius: 50%; object-fit: cover; position: relative; z-index: 2; border: 2px solid #fff; box-shadow: 0 0 20px var(--fire-primary), inset 0 0 10px var(--fire-secondary); }
+        .avatar-box::before { content: ''; position: absolute; inset: -8px; border-radius: 50%; background: conic-gradient(transparent, var(--fire-primary), transparent); animation: spin 3s linear infinite; z-index: 1; filter: blur(5px); }
         
-        .glass-card:hover {
-            border-color: #0ECB81;
-            transform: translateY(-4px);
-            box-shadow: 0 10px 40px -10px rgba(14, 203, 129, 0.15);
+        .username {
+            font-size: 2rem; font-weight: 800; margin-bottom: 5px; text-align: center;
+            background: linear-gradient(to right, #fff 20%, #ffcba4 40%, #ffcba4 60%, #fff 80%);
+            background-size: 200% auto; -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+            animation: shine 4s linear infinite; text-shadow: 0 0 20px rgba(255, 69, 0, 0.3);
         }
 
-        /* Gradient Text */
-        .text-gradient {
-            background: linear-gradient(90deg, #0ECB81 0%, #2563EB 100%);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            background-clip: text;
+        .role-tag { font-size: 0.9rem; color: var(--text-gray); margin-bottom: 30px; display: flex; align-items: center; gap: 8px; }
+        .fire-icon { color: var(--fire-secondary); animation: flicker 1.5s infinite; }
+        
+        .hub-title { width: 100%; text-align: left; font-size: 0.8rem; color: #aaa; margin-bottom: 10px; font-weight: 600; text-transform: uppercase; letter-spacing: 1px; }
+        
+        /* NEW: SPOTLIGHT BUTTONS */
+        .spotlight-btn {
+            position: relative; overflow: hidden;
+            transition: transform 0.2s;
         }
+        /* Lớp ánh sáng di chuyển theo chuột */
+        .spotlight-btn::before {
+            content: ''; position: absolute; top: 0; left: 0; right: 0; bottom: 0;
+            background: radial-gradient(circle at var(--x, 50%) var(--y, 50%), rgba(255, 69, 0, 0.15), transparent 50%);
+            opacity: 0; transition: opacity 0.3s; pointer-events: none; z-index: 0;
+        }
+        .spotlight-btn:hover::before { opacity: 1; }
 
-        /* Animation Classes */
-        .reveal {
-            opacity: 0;
-            transform: translateY(30px);
-            transition: all 0.8s ease-out;
+        .community-hub { width: 100%; display: flex; gap: 10px; margin-bottom: 25px; flex-wrap: wrap; }
+        .hub-card { 
+            flex: 1; min-width: 140px; padding: 15px; border-radius: 16px; 
+            background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.1); 
+            display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 8px; 
+            text-decoration: none; color: #fff; z-index: 1; 
         }
-        .reveal.active {
-            opacity: 1;
-            transform: translateY(0);
+        .hub-card > * { position: relative; z-index: 2; } /* Đẩy nội dung lên trên lớp spotlight */
+        .hub-card::after { content: ''; position: absolute; bottom: 0; left: 0; width: 100%; height: 2px; background: var(--fire-primary); box-shadow: 0 -4px 8px var(--fire-primary); opacity: 0.8; }
+        
+        .hc-icon { font-size: 1.8rem; }
+        .hc-name { font-weight: 700; font-size: 0.9rem; }
+        .hc-action { font-size: 0.7rem; color: var(--fire-secondary); text-transform: uppercase; letter-spacing: 1px; font-weight: 600; }
+        
+        .links-group { width: 100%; display: flex; flex-direction: column; gap: 12px; }
+        .btn-link { 
+            width: 100%; padding: 16px 20px; 
+            background: var(--glass); border: 1px solid var(--border); border-radius: 16px; 
+            display: flex; align-items: center; justify-content: space-between; 
+            text-decoration: none; color: #fff; backdrop-filter: blur(10px); 
+            z-index: 1;
         }
+        .btn-link > * { position: relative; z-index: 2; }
+        .btn-link:active { transform: scale(0.98); }
+        .btn-left { display: flex; align-items: center; gap: 15px; }
+        .btn-icon { font-size: 1.3rem; width: 24px; text-align: center; color: #ccc; transition: 0.3s;}
+        .btn-link:hover .btn-icon { color: var(--fire-secondary); transform: scale(1.1); }
+        .btn-arrow { opacity: 0.5; font-size: 0.8rem; transition: 0.3s; }
+        .btn-link:hover .btn-arrow { opacity: 1; transform: translateX(3px); }
+        
+        .click-particle { position: absolute; width: 6px; height: 6px; background: var(--fire-secondary); border-radius: 50%; pointer-events: none; z-index: 9999; animation: explode 0.6s ease-out forwards; }
+        .social-footer { margin-top: 40px; display: flex; gap: 25px; }
+        .sf-item { font-size: 1.4rem; color: #888; transition: 0.3s; padding: 10px; }
+        .sf-item:hover { color: #fff; text-shadow: 0 0 10px #fff; }
+        
+        .status-footer { margin-top: 25px; padding-top: 15px; border-top: 1px solid rgba(255,255,255,0.1); width: 100%; display: flex; justify-content: space-between; font-family: 'Orbitron', sans-serif; font-size: 0.65rem; color: #666; letter-spacing: 1px; }
+        .stat-box { display: flex; align-items: center; gap: 5px; }
+        .live-ping { width: 6px; height: 6px; background: #00ff00; border-radius: 50%; box-shadow: 0 0 5px #00ff00; }
 
-        /* Grid Background */
-        .bg-grid {
-            background-size: 40px 40px;
-            background-image: linear-gradient(to right, rgba(255, 255, 255, 0.02) 1px, transparent 1px),
-                              linear-gradient(to bottom, rgba(255, 255, 255, 0.02) 1px, transparent 1px);
-        }
+        /* Animations */
+        @keyframes spin { 100% { transform: rotate(360deg); } }
+        @keyframes flicker { 0%, 100% { opacity: 1; } 50% { opacity: 0.6; } }
+        @keyframes explode { 0% { transform: translate(0, 0) scale(1); opacity: 1; } 100% { transform: translate(var(--tx), var(--ty)) scale(0); opacity: 0; } }
+        @keyframes blink { 50% { opacity: 0; } }
+        @keyframes scan { 0% { left: -100%; } 100% { left: 100%; } }
+        @keyframes loadProgress { 0% { width: 0%; } 100% { width: 100%; } }
+        @keyframes shine { to { background-position: 200% center; } }
+
     </style>
 </head>
-<body class="bg-dark text-gray-300 font-sans overflow-x-hidden antialiased selection:bg-primary selection:text-white">
+<body>
 
-    <!-- Background Grid & Glow -->
-    <div class="fixed inset-0 z-0 bg-grid pointer-events-none"></div>
-    <div class="fixed top-[-20%] left-[20%] w-[600px] h-[600px] bg-primary/10 rounded-full blur-[150px] pointer-events-none z-0"></div>
-    <div class="fixed bottom-[-20%] right-[10%] w-[500px] h-[500px] bg-blue-600/10 rounded-full blur-[150px] pointer-events-none z-0"></div>
+    <div id="toast">
+        <i class="fas fa-check-circle toast-icon"></i>
+        <span class="toast-text">Đã sao chép STK Banking!</span>
+    </div>
 
-    <!-- Live Ticker (Top Bar) -->
-    <div class="w-full bg-[#161A1E] border-b border-gray-800 relative z-50 h-10 flex items-center overflow-hidden">
-        <div class="flex whitespace-nowrap animate-marquee">
-            <!-- Ticker Items -->
-            <div class="flex items-center gap-8 px-4 font-mono text-xs font-medium">
-                <span class="flex items-center gap-2"><img src="https://cryptologos.cc/logos/bitcoin-btc-logo.svg?v=026" class="w-4 h-4"> BTC <span class="text-primary">$64,230 (+2.4%)</span></span>
-                <span class="flex items-center gap-2"><img src="https://cryptologos.cc/logos/ethereum-eth-logo.svg?v=026" class="w-4 h-4"> ETH <span class="text-primary">$3,450 (+1.8%)</span></span>
-                <span class="flex items-center gap-2"><img src="https://cryptologos.cc/logos/solana-sol-logo.svg?v=026" class="w-4 h-4"> SOL <span class="text-secondary">$145.20 (-0.5%)</span></span>
-                <span class="flex items-center gap-2"><img src="https://cryptologos.cc/logos/bnb-bnb-logo.svg?v=026" class="w-4 h-4"> BNB <span class="text-primary">$590.10 (+0.9%)</span></span>
-                <span class="flex items-center gap-2"><img src="https://cryptologos.cc/logos/xrp-xrp-logo.svg?v=026" class="w-4 h-4"> XRP <span class="text-secondary">$0.62 (-1.2%)</span></span>
-                <!-- Duplicate for seamless loop -->
-                <span class="flex items-center gap-2 ml-8 border-l border-gray-800 pl-8"><img src="https://cryptologos.cc/logos/bitcoin-btc-logo.svg?v=026" class="w-4 h-4"> BTC <span class="text-primary">$64,230 (+2.4%)</span></span>
-                <span class="flex items-center gap-2"><img src="https://cryptologos.cc/logos/ethereum-eth-logo.svg?v=026" class="w-4 h-4"> ETH <span class="text-primary">$3,450 (+1.8%)</span></span>
-                <span class="flex items-center gap-2"><img src="https://cryptologos.cc/logos/solana-sol-logo.svg?v=026" class="w-4 h-4"> SOL <span class="text-secondary">$145.20 (-0.5%)</span></span>
-            </div>
+    <div id="overlay">
+        <div class="loader-content">
+            <div class="system-status"><div class="blink-dot"></div> SECURE GATEWAY</div>
+            <div class="enter-btn-pro">BẤM VÀO ĐÂY</div>
+            <div class="loading-bar"><div class="bar-fill"></div></div>
         </div>
     </div>
 
-    <!-- Navigation -->
-    <nav class="fixed w-full z-40 top-10 transition-all duration-300" id="navbar">
-        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            <div class="flex items-center justify-between h-20 rounded-2xl px-6 transition-all" id="nav-container">
-                <!-- Logo -->
-                <div class="flex-shrink-0 cursor-pointer flex items-center gap-3 group">
-                    <div class="w-10 h-10 rounded-lg bg-primary/20 flex items-center justify-center group-hover:bg-primary transition-colors">
-                        <i class="fa-solid fa-layer-group text-primary text-xl group-hover:text-black"></i>
-                    </div>
-                    <div class="flex flex-col">
-                        <span class="font-display font-bold text-xl text-white tracking-tight leading-none">
-                            KHÔNG TRÚNG
-                        </span>
-                        <span class="font-display font-bold text-xl text-primary tracking-tight leading-none">
-                            THÌ TRẬT
-                        </span>
-                    </div>
-                </div>
+    <video id="bg-video" loop playsinline muted>
+        <source src="https://files.catbox.moe/7l01po.mp4" type="video/mp4">
+    </video>
+    <div class="noise-overlay"></div>
+    <canvas id="embers-canvas"></canvas>
+    <audio id="bg-music" loop>
+        <source src="https://files.catbox.moe/jsluf6.mp3" type="audio/mpeg">
+    </audio>
+
+    <div class="scroll-wrapper">
+        <div class="profile-container" id="main">
+            
+            <div class="hud-corner hud-tl"></div>
+            <div class="hud-corner hud-tr"></div>
+            <div class="hud-corner hud-bl"></div>
+            <div class="hud-corner hud-br"></div>
+
+            <div class="avatar-box stagger-item">
+                <img src="https://i.postimg.cc/WzKLX4ZX/photo-2025-05-18-01-14-08.jpg" alt="Avatar" class="avatar">
+            </div>
+
+            <h1 class="username stagger-item">Thành Phát | HoldStation</h1>
+            <div class="role-tag stagger-item">
+                <i class="fas fa-fire fire-icon"></i> Admin • Người Việt Trade Coin
+            </div>
+
+            <div class="hub-title stagger-item">⚡ Cộng Đồng Chính</div>
+            <div class="community-hub stagger-item">
+                <a href="https://t.me/Vietradecoin" class="hub-card spotlight-btn">
+                    <i class="fab fa-telegram-plane hc-icon" style="color: #0088cc;"></i>
+                    <span class="hc-name">Telegram VIP</span>
+                    <span class="hc-action">Join Now <i class="fas fa-bolt"></i></span>
+                </a>
                 
-                <!-- Desktop Menu -->
-                <div class="hidden md:flex items-center space-x-8">
-                    <a href="#home" class="text-white font-medium hover:text-primary transition-colors text-sm">Trang Chủ</a>
-                    <a href="#features" class="text-gray-400 font-medium hover:text-primary transition-colors text-sm">Công Cụ</a>
-                    <a href="#pricing" class="text-gray-400 font-medium hover:text-primary transition-colors text-sm">Thành Viên VIP</a>
-                    <a href="https://t.me/kotrungthitrat" target="_blank" class="px-5 py-2.5 bg-white text-black font-bold rounded-lg hover:bg-primary hover:text-white transition-all shadow-[0_0_15px_rgba(255,255,255,0.2)] flex items-center gap-2">
-                        <i class="fa-brands fa-telegram text-lg"></i> Telegram
-                    </a>
-                </div>
+                <a href="https://www.facebook.com/profile.php?id=61585422886098" class="hub-card spotlight-btn">
+                    <i class="fab fa-facebook-f hc-icon" style="color: #1877f2;"></i>
+                    <span class="hc-name">Facebook Page</span>
+                    <span class="hc-action">Join Now <i class="fas fa-fire"></i></span>
+                </a>
+            </div>
 
-                <!-- Mobile menu button -->
-                <div class="flex md:hidden">
-                    <button onclick="toggleMenu()" class="text-gray-300 hover:text-white p-2">
-                        <i class="fa-solid fa-bars text-2xl"></i>
-                    </button>
+            <div class="links-group stagger-item">
+                <a href="https://www.tiktok.com/@tradinginsightpro" class="btn-link spotlight-btn">
+                    <div class="btn-left">
+                        <i class="fab fa-tiktok btn-icon" style="color: #ff0050;"></i>
+                        <span class="btn-text">TikTok Channel</span>
+                    </div>
+                    <i class="fas fa-chevron-right btn-arrow"></i>
+                </a>
+
+                <a href="https://discord.com/" class="btn-link spotlight-btn">
+                    <div class="btn-left">
+                        <i class="fab fa-discord btn-icon" style="color: #5865F2;"></i>
+                        <span class="btn-text">Discord Server</span>
+                    </div>
+                    <i class="fas fa-chevron-right btn-arrow"></i>
+                </a>
+
+                <a href="https://x.com/yourhandle" class="btn-link spotlight-btn">
+                    <div class="btn-left">
+                        <i class="fa-brands fa-x-twitter btn-icon" style="color: #fff;"></i>
+                        <span class="btn-text">X</span>
+                    </div>
+                    <i class="fas fa-chevron-right btn-arrow"></i>
+                </a>
+
+                <div class="btn-link spotlight-btn" onclick="copyBanking()" style="cursor: pointer;">
+                    <div class="btn-left">
+                        <i class="fas fa-wallet btn-icon" style="color: #ffaa00;"></i>
+                        <span class="btn-text">Ngân Hàng MBBank</span>
+                    </div>
+                    <i class="fas fa-copy btn-arrow"></i>
                 </div>
             </div>
+
+            <div class="social-footer stagger-item">
+                <a class="sf-item"><i class="fab fa-youtube"></i></a>
+                <a class="sf-item"><i class="fab fa-instagram"></i></a>
+                <span class="sf-item" onclick="toggleMute()"><i id="vol-icon" class="fas fa-volume-up"></i></span>
+            </div>
+
+            <div class="status-footer stagger-item">
+                <div class="stat-box"><div class="live-ping"></div> SYS: ONLINE</div>
+                <div class="stat-box" id="live-clock">00:00:00</div>
+            </div>
+
         </div>
-
-        <!-- Mobile Menu Panel -->
-        <div class="md:hidden hidden bg-[#161A1E] border-b border-gray-800 absolute w-full top-20" id="mobileMenu">
-            <div class="px-4 py-4 space-y-3">
-                <a href="#home" class="block text-white font-medium">Trang Chủ</a>
-                <a href="#pricing" class="block text-gray-400 font-medium">VIP Premium</a>
-                <a href="https://t.me/kotrungthitrat" class="block w-full text-center py-3 bg-primary text-black font-bold rounded-lg">Vào Nhóm Ngay</a>
-            </div>
-        </div>
-    </nav>
-
-    <!-- Hero Section -->
-    <section id="home" class="relative pt-32 pb-20 lg:pt-48 lg:pb-32 overflow-hidden">
-        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
-            <div class="grid lg:grid-cols-12 gap-12 items-center">
-                <!-- Left Content -->
-                <div class="lg:col-span-5 text-left reveal">
-                    <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full border border-primary/30 bg-primary/10 mb-6">
-                        <span class="w-2 h-2 rounded-full bg-primary animate-pulse"></span>
-                        <span class="text-xs font-mono font-bold text-primary uppercase tracking-wider">Live Signals Active</span>
-                    </div>
-                    
-                    <h1 class="text-5xl lg:text-6xl font-display font-bold text-white leading-tight mb-6">
-                        Nâng tầm vị thế <br>
-                        <span class="text-gradient">Trading Master</span>
-                    </h1>
-                    
-                    <p class="text-lg text-gray-400 mb-8 leading-relaxed font-light">
-                        Hệ thống tín hiệu Real-time độ trễ thấp. Phân tích On-chain chuyên sâu. Tham gia cộng đồng Trader thực chiến lớn nhất Việt Nam.
-                    </p>
-
-                    <div class="flex flex-col sm:flex-row gap-4">
-                        <a href="https://t.me/kotrungthitrat" target="_blank" class="px-8 py-4 bg-primary text-black font-bold text-lg rounded-xl hover:bg-[#0bd685] transition-all flex items-center justify-center gap-2 shadow-[0_0_30px_rgba(16,185,129,0.3)] transform hover:-translate-y-1">
-                            <i class="fa-brands fa-telegram text-xl"></i> Join Channel Free
-                        </a>
-                        <a href="#pricing" class="px-8 py-4 border border-gray-700 hover:border-primary text-white font-medium text-lg rounded-xl hover:bg-white/5 transition-all flex items-center justify-center">
-                            Đăng ký VIP
-                        </a>
-                    </div>
-
-                    <!-- Social Proof -->
-                    <div class="mt-10 flex items-center gap-4 border-t border-gray-800 pt-6">
-                        <div class="flex -space-x-4">
-                            <div class="w-10 h-10 rounded-full border-2 border-dark bg-gray-700 flex items-center justify-center text-xs">IMG</div>
-                            <div class="w-10 h-10 rounded-full border-2 border-dark bg-gray-600 flex items-center justify-center text-xs">IMG</div>
-                            <div class="w-10 h-10 rounded-full border-2 border-dark bg-gray-500 flex items-center justify-center text-xs">IMG</div>
-                        </div>
-                        <div>
-                            <div class="text-white font-bold font-mono text-lg">2,450+</div>
-                            <div class="text-gray-500 text-xs uppercase tracking-wide">Active Traders</div>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Right Content: Trading Terminal Mockup (Standard Form) -->
-                <div class="lg:col-span-7 relative reveal delay-200 hidden lg:block">
-                    <!-- Abstract Terminal UI -->
-                    <div class="glass rounded-xl border border-gray-800 overflow-hidden shadow-2xl relative transform rotate-[-1deg] hover:rotate-0 transition-all duration-500">
-                        <!-- Window Header -->
-                        <div class="h-10 bg-[#1E2329] border-b border-gray-800 flex items-center px-4 justify-between">
-                            <div class="flex gap-2">
-                                <div class="w-3 h-3 rounded-full bg-red-500"></div>
-                                <div class="w-3 h-3 rounded-full bg-yellow-500"></div>
-                                <div class="w-3 h-3 rounded-full bg-green-500"></div>
-                            </div>
-                            <div class="text-gray-500 text-xs font-mono uppercase">ktth_terminal_v2.exe</div>
-                        </div>
-
-                        <!-- Terminal Body -->
-                        <div class="p-6 bg-[#0B0E11]">
-                            <div class="flex justify-between items-end mb-6 border-b border-gray-800 pb-4">
-                                <div>
-                                    <div class="text-gray-400 text-xs uppercase mb-1">Total PNL (Unrealized)</div>
-                                    <div class="text-4xl font-mono font-bold text-primary">+$12,450.80</div>
-                                </div>
-                                <div class="text-right">
-                                    <div class="text-gray-400 text-xs uppercase mb-1">Winrate (7D)</div>
-                                    <div class="text-xl font-mono font-bold text-white">82.5%</div>
-                                </div>
-                            </div>
-
-                            <!-- Table Header -->
-                            <div class="grid grid-cols-4 text-gray-500 text-xs font-mono uppercase mb-3 px-2">
-                                <div>Symbol</div>
-                                <div class="text-center">Side</div>
-                                <div class="text-center">Entry</div>
-                                <div class="text-right">PNL</div>
-                            </div>
-
-                            <!-- Row 1 -->
-                            <div class="grid grid-cols-4 items-center p-3 rounded bg-[#1E2329]/50 mb-2 border-l-2 border-primary">
-                                <div class="font-bold text-white flex items-center gap-2">
-                                    <img src="https://cryptologos.cc/logos/bitcoin-btc-logo.svg?v=026" class="w-5 h-5"> BTC
-                                </div>
-                                <div class="text-center"><span class="bg-primary/10 text-primary text-xs font-bold px-2 py-1 rounded">LONG 20x</span></div>
-                                <div class="text-center font-mono text-gray-300">64,100</div>
-                                <div class="text-right font-mono font-bold text-primary">+452.5%</div>
-                            </div>
-
-                            <!-- Row 2 -->
-                            <div class="grid grid-cols-4 items-center p-3 rounded bg-[#1E2329]/50 mb-2 border-l-2 border-secondary">
-                                <div class="font-bold text-white flex items-center gap-2">
-                                    <img src="https://cryptologos.cc/logos/solana-sol-logo.svg?v=026" class="w-5 h-5"> SOL
-                                </div>
-                                <div class="text-center"><span class="bg-secondary/10 text-secondary text-xs font-bold px-2 py-1 rounded">SHORT 10x</span></div>
-                                <div class="text-center font-mono text-gray-300">145.50</div>
-                                <div class="text-right font-mono font-bold text-primary">+124.2%</div>
-                            </div>
-
-                            <!-- Row 3 -->
-                            <div class="grid grid-cols-4 items-center p-3 rounded bg-[#1E2329]/50 border-l-2 border-primary opacity-60">
-                                <div class="font-bold text-white flex items-center gap-2">
-                                    <img src="https://cryptologos.cc/logos/ethereum-eth-logo.svg?v=026" class="w-5 h-5"> ETH
-                                </div>
-                                <div class="text-center"><span class="bg-primary/10 text-primary text-xs font-bold px-2 py-1 rounded">LONG 50x</span></div>
-                                <div class="text-center font-mono text-gray-300">3,420</div>
-                                <div class="text-right font-mono font-bold text-gray-400">Pending</div>
-                            </div>
-                        </div>
-                    </div>
-                    
-                    <!-- Floating Elements -->
-                    <div class="absolute -right-10 top-10 glass px-4 py-2 rounded-lg animate-float">
-                        <div class="text-xs text-gray-400">New Signal</div>
-                        <div class="text-white font-bold text-sm flex items-center gap-1">
-                            LONG PEPE <i class="fa-solid fa-arrow-trend-up text-primary"></i>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </section>
-
-    <!-- Features / Why Choose Us -->
-    <section id="features" class="py-24 border-y border-gray-800 bg-[#0E1116]">
-        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            <div class="text-center mb-16 reveal">
-                <h2 class="text-3xl md:text-4xl font-display font-bold text-white mb-4">Vũ khí tối thượng cho Trader</h2>
-                <p class="text-gray-400 max-w-2xl mx-auto">Cung cấp bộ công cụ và kiến thức chuẩn quỹ đầu tư.</p>
-            </div>
-
-            <div class="grid md:grid-cols-3 gap-8">
-                <!-- Card 1 -->
-                <div class="p-8 rounded-2xl bg-[#161A1E] border border-gray-800 hover:border-primary transition-all duration-300 group cursor-pointer">
-                    <div class="w-12 h-12 rounded-full bg-primary/10 flex items-center justify-center mb-6 group-hover:bg-primary transition-colors">
-                        <i class="fa-solid fa-crosshairs text-xl text-primary group-hover:text-black"></i>
-                    </div>
-                    <h3 class="text-xl font-bold text-white mb-3">Tín hiệu High Quality</h3>
-                    <p class="text-gray-400 text-sm leading-relaxed">Setup chuẩn SMC/Price Action. Điểm Entry, Stoploss, TP rõ ràng. Tỷ lệ R:R luôn > 1:2.</p>
-                </div>
-
-                <!-- Card 2 -->
-                <div class="p-8 rounded-2xl bg-[#161A1E] border border-gray-800 hover:border-blue-500 transition-all duration-300 group cursor-pointer">
-                    <div class="w-12 h-12 rounded-full bg-blue-500/10 flex items-center justify-center mb-6 group-hover:bg-blue-500 transition-colors">
-                        <i class="fa-solid fa-graduation-cap text-xl text-blue-500 group-hover:text-white"></i>
-                    </div>
-                    <h3 class="text-xl font-bold text-white mb-3">Đào tạo Thực chiến</h3>
-                    <p class="text-gray-400 text-sm leading-relaxed">Livestream phân tích thị trường mỗi tối. Hướng dẫn quản lý vốn và tâm lý giao dịch.</p>
-                </div>
-
-                <!-- Card 3 -->
-                <div class="p-8 rounded-2xl bg-[#161A1E] border border-gray-800 hover:border-purple-500 transition-all duration-300 group cursor-pointer">
-                    <div class="w-12 h-12 rounded-full bg-purple-500/10 flex items-center justify-center mb-6 group-hover:bg-purple-500 transition-colors">
-                        <i class="fa-solid fa-robot text-xl text-purple-500 group-hover:text-white"></i>
-                    </div>
-                    <h3 class="text-xl font-bold text-white mb-3">Bot Auto Signal</h3>
-                    <p class="text-gray-400 text-sm leading-relaxed">Bot theo dõi dòng tiền cá mập, cảnh báo thanh lý (Liquidation) và biến động giá bất thường.</p>
-                </div>
-            </div>
-        </div>
-    </section>
-
-    <!-- Pricing / Membership -->
-    <section id="pricing" class="py-24 relative overflow-hidden">
-        <div class="absolute inset-0 bg-primary/5 skew-y-3 transform origin-top-left"></div>
-        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
-            <div class="text-center mb-16 reveal">
-                <span class="text-primary font-bold tracking-widest uppercase text-xs">Membership</span>
-                <h2 class="text-3xl md:text-5xl font-display font-bold text-white mt-2 mb-4">Tham gia Biệt Đội</h2>
-            </div>
-
-            <div class="grid md:grid-cols-2 gap-8 max-w-4xl mx-auto">
-                <!-- Free Plan -->
-                <div class="glass p-8 rounded-2xl border border-white/5 relative hover:bg-[#161A1E] transition-colors">
-                    <h3 class="text-2xl font-bold text-white mb-2">Community</h3>
-                    <div class="text-4xl font-mono font-bold text-gray-400 mb-6">Free</div>
-                    <ul class="space-y-4 mb-8 text-gray-300 text-sm">
-                        <li class="flex items-center gap-3"><i class="fa-solid fa-check text-primary"></i> Chat thảo luận chung</li>
-                        <li class="flex items-center gap-3"><i class="fa-solid fa-check text-primary"></i> Nhận định thị trường Daily</li>
-                        <li class="flex items-center gap-3"><i class="fa-solid fa-check text-primary"></i> 1-2 Kèo Public/tuần</li>
-                        <li class="flex items-center gap-3 text-gray-600"><i class="fa-solid fa-xmark"></i> Support 1:1</li>
-                        <li class="flex items-center gap-3 text-gray-600"><i class="fa-solid fa-xmark"></i> Bot VIP Alerts</li>
-                    </ul>
-                    <a href="https://t.me/kotrungthitrat" target="_blank" class="block w-full text-center py-4 rounded-lg border border-gray-600 text-white font-bold hover:border-white transition-all">
-                        Tham gia ngay
-                    </a>
-                </div>
-
-                <!-- VIP Plan -->
-                <div class="p-8 rounded-2xl bg-gradient-to-b from-[#1E2329] to-black border border-primary shadow-[0_0_30px_rgba(16,185,129,0.15)] relative transform md:scale-105">
-                    <div class="absolute top-0 right-0 bg-primary text-black text-xs font-bold px-3 py-1 rounded-bl-lg uppercase">Best Value</div>
-                    <h3 class="text-2xl font-bold text-white mb-2 flex items-center gap-2">
-                        VIP Premium <i class="fa-solid fa-crown text-accent"></i>
-                    </h3>
-                    <div class="flex items-baseline gap-1 mb-6">
-                        <span class="text-4xl font-mono font-bold text-primary">$100</span>
-                        <span class="text-gray-400 text-sm">/tháng</span>
-                    </div>
-                    <ul class="space-y-4 mb-8 text-gray-300 text-sm">
-                        <li class="flex items-center gap-3"><i class="fa-solid fa-check text-primary"></i> <strong>Full Signals</strong> (Scalp & Swing)</li>
-                        <li class="flex items-center gap-3"><i class="fa-solid fa-check text-primary"></i> Tín hiệu đi trước Public</li>
-                        <li class="flex items-center gap-3"><i class="fa-solid fa-check text-primary"></i> Zoom đào tạo Private hàng tuần</li>
-                        <li class="flex items-center gap-3"><i class="fa-solid fa-check text-primary"></i> Cơ cấu danh mục 1:1</li>
-                        <li class="flex items-center gap-3"><i class="fa-solid fa-check text-primary"></i> <strong>Full Bot Access</strong></li>
-                    </ul>
-                    <a href="https://t.me/kotrungthitrat/15405" target="_blank" class="block w-full text-center py-4 rounded-lg bg-primary text-black font-bold hover:bg-[#0bd685] transition-all shadow-lg">
-                        Đăng ký VIP Ngay
-                    </a>
-                </div>
-            </div>
-        </div>
-    </section>
-
-    <!-- Footer -->
-    <footer class="border-t border-gray-800 bg-[#0B0E11] pt-16 pb-8">
-        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            <div class="flex flex-col md:flex-row justify-between items-center gap-6">
-                <div class="flex items-center gap-3">
-                     <div class="w-8 h-8 bg-primary/20 rounded flex items-center justify-center text-primary"><i class="fa-solid fa-chart-simple"></i></div>
-                    <span class="font-display font-bold text-lg text-white uppercase tracking-wider">Không Trúng Thì Trật</span>
-                </div>
-                <div class="flex gap-4">
-                    <a href="#" class="w-10 h-10 rounded bg-[#1E2329] flex items-center justify-center text-gray-400 hover:text-white hover:bg-primary transition-all"><i class="fa-brands fa-youtube"></i></a>
-                    <a href="https://www.tiktok.com/@kotrungthitrat" target="_blank" class="w-10 h-10 rounded bg-[#1E2329] flex items-center justify-center text-gray-400 hover:text-white hover:bg-primary transition-all"><i class="fa-brands fa-tiktok"></i></a>
-                    <a href="https://t.me/kotrungthitrat" target="_blank" class="w-10 h-10 rounded bg-[#1E2329] flex items-center justify-center text-gray-400 hover:text-white hover:bg-primary transition-all"><i class="fa-brands fa-telegram"></i></a>
-                </div>
-            </div>
-            <div class="text-center text-gray-600 text-xs mt-10 font-mono">
-                Disclaimer: Trading Crypto involves high risk. Invest wisely. <br>
-                &copy; 2024 KTTT Community. All rights reserved.
-            </div>
-        </div>
-    </footer>
+    </div>
 
     <script>
-        // Navbar Effect
-        window.addEventListener('scroll', function() {
-            const navbar = document.getElementById('navbar');
-            const navContainer = document.getElementById('nav-container');
-            if (window.scrollY > 20) {
-                navbar.classList.add('top-0');
-                navbar.classList.remove('top-10');
-                navContainer.classList.add('bg-[#161A1E]/90', 'backdrop-blur-md', 'border', 'border-gray-800');
-            } else {
-                navbar.classList.add('top-10');
-                navbar.classList.remove('top-0');
-                navContainer.classList.remove('bg-[#161A1E]/90', 'backdrop-blur-md', 'border', 'border-gray-800');
+        // 1. SPOTLIGHT EFFECT (Đèn pin soi nút)
+        document.querySelectorAll('.spotlight-btn').forEach(btn => {
+            btn.addEventListener('mousemove', e => {
+                const rect = btn.getBoundingClientRect();
+                const x = e.clientX - rect.left;
+                const y = e.clientY - rect.top;
+                btn.style.setProperty('--x', `${x}px`);
+                btn.style.setProperty('--y', `${y}px`);
+            });
+        });
+
+        // 2. COPY BANKING FUNCTION (Hiện thông báo)
+        function copyBanking() {
+            // Thay số tài khoản của bạn vào đây
+            const stk = "14678999999999"; 
+            navigator.clipboard.writeText(stk).then(() => {
+                const toast = document.getElementById('toast');
+                toast.classList.add('show');
+                setTimeout(() => toast.classList.remove('show'), 3000);
+            }).catch(err => console.error('Lỗi copy:', err));
+        }
+
+        // 3. LOGIC MỞ & ANIMATION
+        const overlay = document.getElementById('overlay');
+        const staggerItems = document.querySelectorAll('.stagger-item');
+        const video = document.getElementById('bg-video');
+        const audio = document.getElementById('bg-music');
+        const volIcon = document.getElementById('vol-icon');
+
+        overlay.addEventListener('click', () => {
+            overlay.style.transform = 'scale(1.1)';
+            overlay.style.opacity = '0';
+            setTimeout(() => overlay.style.display = 'none', 800);
+            
+            video.play();
+            audio.volume = 0.5;
+            audio.play().catch(() => {});
+
+            staggerItems.forEach((item, index) => {
+                setTimeout(() => item.classList.add('visible'), index * 100);
+            });
+        });
+
+        // 4. CLOCK
+        function updateClock() {
+            const now = new Date();
+            document.getElementById('live-clock').innerText = now.toLocaleTimeString('en-US', {hour12: false});
+        }
+        setInterval(updateClock, 1000);
+        updateClock();
+
+        // 5. CANVAS EMBERS
+        const canvas = document.getElementById('embers-canvas');
+        const ctx = canvas.getContext('2d');
+        let width, height;
+        const embers = [];
+
+        function resize() { width = canvas.width = window.innerWidth; height = canvas.height = window.innerHeight; }
+        window.addEventListener('resize', resize);
+        resize();
+
+        class Ember {
+            constructor() { this.reset(); }
+            reset() {
+                this.x = Math.random() * width;
+                this.y = height + Math.random() * 100;
+                this.size = Math.random() * 2 + 0.5;
+                this.speed = Math.random() * 1 + 0.2;
+                this.opacity = Math.random() * 0.5 + 0.1;
+            }
+            update() {
+                this.y -= this.speed;
+                if (this.y < -10) this.reset();
+            }
+            draw() {
+                ctx.fillStyle = `rgba(255, 69, 0, ${this.opacity})`;
+                ctx.beginPath(); ctx.arc(this.x, this.y, this.size, 0, Math.PI*2); ctx.fill();
+            }
+        }
+        for(let i=0; i<40; i++) embers.push(new Ember());
+        function animate() {
+            ctx.clearRect(0,0,width,height);
+            embers.forEach(e => { e.update(); e.draw(); });
+            requestAnimationFrame(animate);
+        }
+        animate();
+
+        // 6. CLICK PARTICLES
+        document.addEventListener('click', (e) => {
+            for(let i=0; i<8; i++) {
+                const p = document.createElement('div');
+                p.className = 'click-particle';
+                document.body.appendChild(p);
+                const angle = Math.random() * Math.PI * 2;
+                const v = Math.random() * 40 + 10;
+                p.style.left = e.clientX + 'px'; p.style.top = e.clientY + 'px';
+                p.style.setProperty('--tx', Math.cos(angle)*v + 'px');
+                p.style.setProperty('--ty', Math.sin(angle)*v + 'px');
+                setTimeout(() => p.remove(), 500);
             }
         });
 
-        // Mobile Menu
-        function toggleMenu() {
-            const menu = document.getElementById('mobileMenu');
-            menu.classList.toggle('hidden');
+        function toggleMute() {
+            audio.muted = !audio.muted;
+            volIcon.className = audio.muted ? 'fas fa-volume-mute' : 'fas fa-volume-up';
         }
-
-        // Scroll Reveal
-        const revealElements = document.querySelectorAll('.reveal');
-        function reveal() {
-            for (let i = 0; i < revealElements.length; i++) {
-                const windowHeight = window.innerHeight;
-                const elementTop = revealElements[i].getBoundingClientRect().top;
-                if (elementTop < windowHeight - 100) {
-                    revealElements[i].classList.add("active");
-                }
-            }
-        }
-        window.addEventListener("scroll", reveal);
-        reveal();
     </script>
 </body>
 </html>
+
